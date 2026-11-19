@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <!-- The one page checkout places orders via the REST API (payment-information) -->
+    <event name="checkout_submit_all_after">
+        <observer name="neuronaptiq_search_track_order" instance="NeuronaptiQ\Search\Observer\TrackOrderObserver"/>
+    </event>
+</config>

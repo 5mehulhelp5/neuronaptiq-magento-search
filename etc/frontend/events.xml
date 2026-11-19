@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="checkout_cart_save_after">
+        <observer name="neuronaptiq_search_track_cart" instance="NeuronaptiQ\Search\Observer\TrackCartObserver"/>
+    </event>
+    <event name="controller_action_postdispatch_checkout_index_index">
+        <observer name="neuronaptiq_search_track_checkout" instance="NeuronaptiQ\Search\Observer\TrackCheckoutObserver"/>
+    </event>
+    <event name="customer_login">
+        <observer name="neuronaptiq_search_track_login" instance="NeuronaptiQ\Search\Observer\TrackLoginObserver"/>
+    </event>
+    <event name="customer_logout">
+        <observer name="neuronaptiq_search_reset_sid" instance="NeuronaptiQ\Search\Observer\ResetSidObserver"/>
+    </event>
+    <event name="checkout_submit_all_after">
+        <observer name="neuronaptiq_search_track_order" instance="NeuronaptiQ\Search\Observer\TrackOrderObserver"/>
+    </event>
+</config>

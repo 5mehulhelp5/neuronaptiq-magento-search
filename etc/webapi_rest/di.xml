@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- The one page checkout saves the shipping method via REST when proceeding to "Review & Payments" -->
+    <type name="Magento\Checkout\Api\ShippingInformationManagementInterface">
+        <plugin name="neuronaptiq_search_track_shipping_information"
+                type="NeuronaptiQ\Search\Plugin\TrackShippingInformationPlugin"
+                sortOrder="10"
+                disabled="false"/>
+    </type>
+</config>

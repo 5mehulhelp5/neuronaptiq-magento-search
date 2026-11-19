@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Quick search uses our result applier, which does not slice the already paginated API results again -->
+    <virtualType name="NeuronaptiQ\Search\Model\ResourceModel\Fulltext\Collection\SearchResultApplierFactory"
+                 type="Magento\CatalogSearch\Model\ResourceModel\Fulltext\Collection\SearchResultApplierFactory">
+        <arguments>
+            <argument name="instanceName" xsi:type="string">NeuronaptiQ\Search\Model\ResourceModel\Fulltext\Collection\SearchResultApplier</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="elasticsearchFulltextSearchCollection">
+        <arguments>
+            <argument name="searchResultApplierFactory" xsi:type="object">NeuronaptiQ\Search\Model\ResourceModel\Fulltext\Collection\SearchResultApplierFactory</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Magento\Search\Model\AutocompleteInterface">
+        <plugin name="neuronaptiq_search_autocomplete_plugin"
+                type="NeuronaptiQ\Search\Plugin\AutocompletePlugin"
+                sortOrder="10"
+                disabled="false"/>
+    </type>
+
+    <type name="Magento\Framework\View\Layout">
+        <plugin name="neuronaptiq_search_result_page_cache_plugin"
+                type="NeuronaptiQ\Search\Plugin\SearchResultPageCachePlugin"
+                sortOrder="10"
+                disabled="false"/>
+    </type>
+
+    <type name="Magento\Catalog\Block\Product\ProductList\Related">
+        <plugin name="neuronaptiq_search_related_products_plugin"
+                type="NeuronaptiQ\Search\Plugin\RelatedProductsPlugin"
+                sortOrder="10"
+                disabled="false"/>
+    </type>
+
+    <type name="Magento\Search\Api\SearchInterface">
+        <plugin name="neuronaptiq_search_page_plugin"
+                type="NeuronaptiQ\Search\Plugin\SearchPlugin"
+                sortOrder="10"
+                disabled="false"/>
+    </type>
+</config>

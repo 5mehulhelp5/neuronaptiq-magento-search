@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="NeuronaptiQ\Search\Api\SearchApiClientInterface"
+                type="NeuronaptiQ\Search\Model\Api\SearchApiClient"/>
+    <preference for="NeuronaptiQ\Search\Api\FacetedSearchApiClientInterface"
+                type="NeuronaptiQ\Search\Model\Api\SearchApiClient"/>
+    <preference for="NeuronaptiQ\Search\Api\CrossSellingApiClientInterface"
+                type="NeuronaptiQ\Search\Model\Api\SearchApiClient"/>
+    <preference for="NeuronaptiQ\Search\Api\TrackingApiClientInterface"
+                type="NeuronaptiQ\Search\Model\Api\TrackingApiClient"/>
+
+    <!-- Logging: own log file var/log/neuronaptiq.log or the Magento logger (switch separate_log_file).
+         Based on Monolog\Logger, not Magento\Framework\Logger\Monolog: virtual types inherit the array arguments
+         of their parent type, so the handlers of the Magento logger (system.log, debug.log, syslog) would be
+         merged in and every record would be written twice. -->
+    <virtualType name="NeuronaptiQ\Search\Logger\FileLogger" type="Monolog\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">neuronaptiq</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="file" xsi:type="object">NeuronaptiQ\Search\Logger\Handler\FileHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="NeuronaptiQ\Search\Logger\Handler\FileHandler">
+        <arguments>
+            <argument name="filesystem" xsi:type="object">Magento\Framework\Filesystem\Driver\File</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Logger\Logger">
+        <arguments>
+            <argument name="fileLogger" xsi:type="object">NeuronaptiQ\Search\Logger\FileLogger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Model\Api\SearchApiClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Model\Api\TrackingApiClient">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Model\AutocompleteService">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Model\Config">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Model\CrossSellingService">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Model\CustomerDataProvider">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Model\ProductLoader">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Model\Session\SidManager">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Model\TrackingService">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Observer\TouchParentProductsObserver">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Plugin\AutocompletePlugin">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Plugin\SearchPlugin">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+    <type name="NeuronaptiQ\Search\Plugin\TrackShippingInformationPlugin">
+        <arguments>
+            <argument name="logger" xsi:type="object">NeuronaptiQ\Search\Logger\Logger</argument>
+        </arguments>
+    </type>
+</config>

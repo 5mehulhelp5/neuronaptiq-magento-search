@@ -1,0 +1,52 @@
+//
+//  Enhanced search suggestions (image, name, price) and category suggestions (name, breadcrumb)
+//  _____________________________________________
+
+& when (@media-common = true) {
+    .search-autocomplete {
+        ul {
+            li.neuronaptiq-suggest-item--enhanced {
+                align-items: center;
+                display: flex;
+                gap: @indent__s;
+                padding-right: @indent__s;
+
+                .qs-option-image {
+                    flex: 0 0 50px;
+                    height: 50px;
+                    object-fit: contain;
+                    width: 50px;
+                }
+
+                .qs-option-name {
+                    flex: 1 1 auto;
+                    min-width: 0;
+                }
+
+                .qs-option-price {
+                    flex: 0 0 auto;
+                    font-weight: @font-weight__semibold;
+                    white-space: nowrap;
+                }
+
+                .amount {
+                    display: none;
+                }
+            }
+
+            li.neuronaptiq-suggest-item--category {
+                padding-right: @indent__s;
+
+                .qs-option-breadcrumb {
+                    color: @color-gray60;
+                    display: block;
+                    font-size: @font-size__s;
+                }
+
+                .amount {
+                    display: none;
+                }
+            }
+        }
+    }
+}

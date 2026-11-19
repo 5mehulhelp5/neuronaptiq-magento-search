@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <neuronaptiq_search>
+            <general>
+                <search>1</search>
+                <crosssellings>0</crosssellings>
+                <crosssellings_limit>8</crosssellings_limit>
+                <send_customer_data>0</send_customer_data>
+                <tracking>1</tracking>
+                <environment>prod</environment>
+                <name></name>
+                <token></token>
+                <timeout>2</timeout>
+                <suggest_limit>5</suggest_limit>
+                <enhanced_suggestions>1</enhanced_suggestions>
+                <suggest_parent_products>0</suggest_parent_products>
+                <separate_log_file>1</separate_log_file>
+            </general>
+        </neuronaptiq_search>
+    </default>
+</config>

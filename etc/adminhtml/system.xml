@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+    <system>
+        <tab id="neuronaptiq" translate="label" sortOrder="900">
+            <label>NeuronaptiQ</label>
+        </tab>
+        <section id="neuronaptiq_search" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <class>separator-top</class>
+            <label>Search Settings</label>
+            <tab>neuronaptiq</tab>
+            <resource>NeuronaptiQ_Search::config</resource>
+            <group id="general" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General Configuration</label>
+
+                <field id="search" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Search</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Enables NeuronaptiQ search in the search field (suggest).</comment>
+                </field>
+
+                <field id="crosssellings" translate="label comment" type="select" sortOrder="15" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Cross-Sellings</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Fills the "Related Products" block of the product page with NeuronaptiQ cross-sellings. Falls back to the maintained related products if the API is not available or returns no results.</comment>
+                </field>
+
+                <field id="crosssellings_limit" translate="label comment" type="text" sortOrder="16" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Cross-Selling Limit</label>
+                    <comment>Number of cross-selling products in the "Related Products" block of the product page (1-20).</comment>
+                    <validate>required-entry validate-digits validate-digits-range digits-range-1-20</validate>
+                    <depends>
+                        <field id="crosssellings">1</field>
+                    </depends>
+                </field>
+
+                <field id="send_customer_data" translate="label comment" type="select" sortOrder="17" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Send Customer Data</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Sends the data of logged-in customers (name, email, birth year, address country, ...) to NeuronaptiQ. Requires a legal basis (privacy policy, data processing agreement). Search result pages of logged-in customers are then excluded from the full page cache.</comment>
+                </field>
+
+                <field id="tracking" translate="label comment" type="select" sortOrder="18" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Tracking</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Sends cart changes, checkout visits, orders and customer logins (only if sending customer data is enabled) to NeuronaptiQ.</comment>
+                </field>
+
+                <field id="environment" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Environment</label>
+                    <source_model>NeuronaptiQ\Search\Model\Config\Source\Environment</source_model>
+                    <comment>Possible values: Development (dev), Testing (test) or Production (prod).</comment>
+                </field>
+
+                <field id="name" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Instance Name</label>
+                    <comment>The name of the NeuronaptiQ instance (e.g. {name}.synapse.neuronaptiq.ai).</comment>
+                </field>
+
+                <field id="token" translate="label comment" type="obscure" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Token</label>
+                    <backend_model>Magento\Config\Model\Config\Backend\Encrypted</backend_model>
+                    <comment>The token of the integration.</comment>
+                </field>
+
+                <field id="timeout" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>API Timeout (Seconds)</label>
+                    <comment>Default: 2 seconds.</comment>
+                </field>
+
+                <field id="suggest_limit" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Suggest Limit</label>
+                    <comment>Maximum number of suggested products in the search field.</comment>
+                    <depends>
+                        <field id="search">1</field>
+                    </depends>
+                </field>
+
+                <field id="enhanced_suggestions" translate="label comment" type="select" sortOrder="65" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enhanced Search Suggestions</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Shows product image and price in the search suggestions and opens the product page directly when a suggestion is selected (with the matching variant preselected). If disabled, the default Magento behavior is used: the suggestion text is searched.</comment>
+                    <depends>
+                        <field id="search">1</field>
+                    </depends>
+                </field>
+                <field id="suggest_parent_products" translate="label comment" type="select" sortOrder="66" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Suggest Parent Products Instead of Variants</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Shows a matching variant as its parent product in the search suggestions (name, image and "as low as" price of the parent; the link keeps the variant preselection). Intended for the variant setting "Best variant" of the NeuronaptiQ integration, which returns one variant per parent product. The search result page always shows parent products.</comment>
+                    <depends>
+                        <field id="search">1</field>
+                    </depends>
+                </field>
+                <field id="separate_log_file" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Separate Log File</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <comment>Writes the log messages of the module to var/log/neuronaptiq.log (API requests and responses only with debug logging enabled). Disable it to log via the Magento logger (system.log, debug.log), e.g. on cloud setups that forward the Magento logs to a central log service.</comment>
+                </field>
+            </group>
+        </section>
+    </system>
+</config>
