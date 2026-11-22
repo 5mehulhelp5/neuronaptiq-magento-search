@@ -11,6 +11,7 @@ use NeuronaptiQ\Search\Api\TrackingApiClientInterface;
 use NeuronaptiQ\Search\Exception\SearchApiException;
 use NeuronaptiQ\Search\Model\Config;
 use NeuronaptiQ\Search\Model\CustomerDataProvider;
+use NeuronaptiQ\Search\Model\OriginProvider;
 use NeuronaptiQ\Search\Model\Session\SidManager;
 use Psr\Log\LoggerInterface;
 
@@ -62,6 +63,11 @@ class TrackingApiClient implements TrackingApiClientInterface
     private LoggerInterface $logger;
 
     /**
+     * @var OriginProvider
+     */
+    private OriginProvider $originProvider;
+
+    /**
      * @param Config $config
      * @param Curl $curl
      * @param Json $jsonSerializer
@@ -70,6 +76,7 @@ class TrackingApiClient implements TrackingApiClientInterface
      * @param Header $httpHeader
      * @param CustomerDataProvider $customerDataProvider
      * @param LoggerInterface $logger
+     * @param OriginProvider $originProvider
      */
     public function __construct(
         Config $config,
@@ -79,7 +86,8 @@ class TrackingApiClient implements TrackingApiClientInterface
         RemoteAddress $remoteAddress,
         Header $httpHeader,
         CustomerDataProvider $customerDataProvider,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        OriginProvider $originProvider
     ) {
         $this->config = $config;
         $this->curl = $curl;
@@ -89,6 +97,7 @@ class TrackingApiClient implements TrackingApiClientInterface
         $this->httpHeader = $httpHeader;
         $this->customerDataProvider = $customerDataProvider;
         $this->logger = $logger;
+        $this->originProvider = $originProvider;
     }
 
     /**
@@ -183,6 +192,7 @@ class TrackingApiClient implements TrackingApiClientInterface
                 'remoteAddr' => (string)($this->remoteAddress->getRemoteAddress() ?: '127.0.0.1'),
                 'userAgent' => (string)($this->httpHeader->getHttpUserAgent() ?: '')
             ],
+            'origin' => $this->originProvider->getOrigin(),
             'sid' => $this->sidManager->getSid()
         ];
 

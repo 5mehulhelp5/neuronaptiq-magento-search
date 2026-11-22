@@ -2,7 +2,7 @@
     "name": "neuronaptiq/magento-search",
     "description": "Semantic search for Magento 2 powered by the NeuronaptiQ search API",
     "type": "magento2-module",
-    "version": "2.1.1",
+    "version": "2.2.0",
     "license": "MIT",
     "require": {
         "php": "~8.2.0||~8.3.0||~8.4.0||~8.5.0",

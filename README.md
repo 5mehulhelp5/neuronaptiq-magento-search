@@ -26,7 +26,7 @@ standard Magento behavior, so the shop never breaks because of the external serv
 
 ## Installation
 
-Via Composer:
+Via Composer (the package is available on packagist.org, no additional repository is needed):
 
 ```bash
 composer require neuronaptiq/magento-search
@@ -41,7 +41,7 @@ Manual installation from the zip package: extract it in the Magento root, it con
 
 ```bash
 cd /path/to/magento
-unzip neuronaptiq-search-1.0.0.zip
+unzip neuronaptiq-search-<version>.zip
 bin/magento module:enable NeuronaptiQ_Search
 bin/magento setup:upgrade
 bin/magento setup:di:compile
@@ -50,6 +50,10 @@ bin/magento cache:flush
 
 In production mode, run `bin/magento setup:static-content:deploy` afterwards (the module ships JavaScript
 and LESS).
+
+Switching from the zip package to Composer: remove `app/code/NeuronaptiQ/Search` (and
+`app/code/NeuronaptiQ/SearchElasticsuite`, if installed) before `composer require`, otherwise Magento finds the
+modules twice. Configuration values are kept, they are stored in the database.
 
 ## Configuration
 
@@ -361,6 +365,20 @@ On customer logout (`customer_logout`, `Observer/ResetSidObserver`) the cookie i
 starts a new session. Otherwise searches, carts and orders after the logout (as guest or as another customer)
 would be assigned to the session of the previous customer. On login the SID is kept: searches made as guest
 stay linked to the order placed after logging in.
+
+### Origin
+
+Suggest, search, cross-selling and tracking requests contain an `origin` object (`Model/OriginProvider`), stored
+with the session in the search service:
+
+| Field | Source |
+|---|---|
+| `pluginVendor` | `neuronaptiq` |
+| `pluginVersion` | version of this module from its `composer.json`, e.g. `2.2.0` |
+| `shopVersion` | Magento version, e.g. `2.4.8-p5` |
+
+Values that cannot be determined are sent as empty string. With Smile ElasticSuite the version of this module is sent
+as well, `NeuronaptiQ_SearchElasticsuite` adds nothing.
 
 ### Customer data
 

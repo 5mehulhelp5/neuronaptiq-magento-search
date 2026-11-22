@@ -15,6 +15,7 @@ use NeuronaptiQ\Search\Api\SearchApiClientInterface;
 use NeuronaptiQ\Search\Exception\SearchApiException;
 use NeuronaptiQ\Search\Model\Config;
 use NeuronaptiQ\Search\Model\CustomerDataProvider;
+use NeuronaptiQ\Search\Model\OriginProvider;
 use NeuronaptiQ\Search\Model\Search\SearchFilters;
 use NeuronaptiQ\Search\Model\Session\SidManager;
 use Psr\Log\LoggerInterface;
@@ -85,6 +86,11 @@ class SearchApiClient implements
     private CustomerDataProvider $customerDataProvider;
 
     /**
+     * @var OriginProvider
+     */
+    private OriginProvider $originProvider;
+
+    /**
      * @param Config $config
      * @param Curl $curl
      * @param Json $jsonSerializer
@@ -94,6 +100,7 @@ class SearchApiClient implements
      * @param StoreManagerInterface $storeManager
      * @param LoggerInterface $logger
      * @param CustomerDataProvider $customerDataProvider
+     * @param OriginProvider $originProvider
      */
     public function __construct(
         Config $config,
@@ -104,7 +111,8 @@ class SearchApiClient implements
         Header $httpHeader,
         StoreManagerInterface $storeManager,
         LoggerInterface $logger,
-        CustomerDataProvider $customerDataProvider
+        CustomerDataProvider $customerDataProvider,
+        OriginProvider $originProvider
     ) {
         $this->config = $config;
         $this->curl = $curl;
@@ -115,6 +123,7 @@ class SearchApiClient implements
         $this->storeManager = $storeManager;
         $this->logger = $logger;
         $this->customerDataProvider = $customerDataProvider;
+        $this->originProvider = $originProvider;
     }
 
     /**
@@ -281,6 +290,7 @@ class SearchApiClient implements
                 'remoteAddr' => $remoteAddr,
                 'userAgent' => $userAgent
             ],
+            'origin' => $this->originProvider->getOrigin(),
             'settings' => [
                 'return' => self::RETURN_FIELDS
             ],
@@ -524,6 +534,7 @@ class SearchApiClient implements
                 'remoteAddr' => $remoteAddr,
                 'userAgent' => $userAgent
             ],
+            'origin' => $this->originProvider->getOrigin(),
             'settings' => [
                 'return' => self::RETURN_FIELDS
             ],
