@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace NeuronaptiQ\Search\Model\Search;
 
+use Magento\CatalogSearch\Model\Layer\Filter\Price;
 use Magento\Framework\Api\Search\SearchCriteriaInterface;
 
 /**
@@ -12,8 +13,9 @@ use Magento\Framework\Api\Search\SearchCriteriaInterface;
  * The layered navigation adds its filters to the fulltext collection, which puts them into the search criteria:
  * - attribute filters as field = attribute code, value = option id (or a list of option ids)
  * - the category filter as category_ids, the context of the search (hard category filter of the API)
- * - the price filter as price.from and price.to; Magento already subtracts 0.001 from the exclusive end of a
- *   range, so price.to is an inclusive maximum
+ * - the price filter as price.from and price.to; Magento subtracts 0.001 (Price::PRICE_DELTA) from the exclusive
+ *   end of a range, except for a single price (from = to). The reader adds it again and sends the end as exclusive
+ *   maximum, so prices like 29.9995 are not lost; a single price stays an inclusive maximum
  * - price_dynamic_algorithm, the calculation of the price ranges
  *
  * search_term and visibility are handled by the search itself. category_ids_to_aggregate only limits the category
@@ -80,7 +82,11 @@ class CriteriaFilterReader
             }
         }
 
-        if ($priceFrom !== null || $priceTo !== null) {
+        if ($priceTo !== null && $priceTo !== $priceFrom) {
+            // Restore the original end of the range and send it as exclusive maximum (SimpKo/project#348)
+            $filters = $filters->withPrice($priceFrom, round($priceTo + Price::PRICE_DELTA, 6), true);
+        } elseif ($priceFrom !== null) {
+            // A range without end or a single price (from = to)
             $filters = $filters->withPrice($priceFrom, $priceTo);
         }
 

@@ -278,8 +278,8 @@ ElasticSuite is handled by `NeuronaptiQ_SearchElasticsuite` (multiselect, price 
   criteria and sends them to the API (`params.filters`, `categoryIds`, `price`):
   - attributes: group = attribute code, values = option ids (OR within an attribute, AND between attributes)
   - category: the hard category filter (`categoryIds`), the context of the search
-  - price: `price.from`/`price.to` in the base currency; Magento already makes the exclusive end of a range
-    inclusive (`to − 0.001`)
+  - price: `price.from`/`price.to` in the base currency; the end of a range is sent as exclusive maximum
+    (`maxExclusive`, Magento's `to − 0.001` is reverted), a single price (from = to) as inclusive maximum
   - `search_term`, `visibility` and `category_ids_to_aggregate` (limits OpenSearch's category aggregation, no
     filter) are not sent
 - **Facets:** every quick search request asks for the facets (`params.facets`, `currency` = base currency code).
