@@ -12,7 +12,8 @@ use Magento\Framework\Api\Search\SearchCriteriaInterface;
  *
  * The layered navigation adds its filters to the fulltext collection, which puts them into the search criteria:
  * - attribute filters as field = attribute code, value = option id (or a list of option ids)
- * - the category filter as category_ids, the context of the search (hard category filter of the API)
+ * - the category filter as category_ids, sent as group category: applied to the hits of the search like the other
+ *   groups, so the result matches the count of the category facet (SimpKo/project#360)
  * - the price filter as price.from and price.to; Magento subtracts 0.001 (Price::PRICE_DELTA) from the exclusive
  *   end of a range, except for a single price (from = to). The reader adds it again and sends the end as exclusive
  *   maximum, so prices like 29.9995 are not lost; a single price stays an inclusive maximum
@@ -63,7 +64,7 @@ class CriteriaFilterReader
                 $values = $this->toList($filter->getValue());
                 switch ($field) {
                     case self::FIELD_CATEGORY:
-                        $filters = $filters->withCategoryIds($values);
+                        $filters = $filters->withCategories($values);
                         break;
                     case self::FIELD_PRICE_FROM:
                         $priceFrom = $this->toPrice($values);

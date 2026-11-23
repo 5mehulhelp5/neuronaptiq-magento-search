@@ -7,8 +7,8 @@ namespace NeuronaptiQ\Search\Model\Search;
  * Selection of the layered navigation and the facets requested from the search API (SimpKo/project#324)
  *
  * - groups: selected values per group, the group is the attribute code, the values are option ids (OR within a
- *   group, AND between the groups)
- * - categoryIds: hard category filter, the context of the search (e.g. a category selected in the layered navigation)
+ *   group, AND between the groups); categories selected in the layered navigation are the group category
+ * - categoryIds: hard category filter, the context of the search (limits the search itself, e.g. a category page)
  * - price: price filter in the base currency, maxExclusive excludes the maximum (price < max)
  * - facets: compute the facets, priceRanges: the ranges of the price facet ([] = automatic step, or step and
  *   maxIntervals like Magento "Manual")
@@ -82,7 +82,22 @@ class SearchFilters
     }
 
     /**
-     * Adds categories to the hard category filter
+     * Adds categories selected in the layered navigation as group category (SimpKo/project#360)
+     *
+     * The API applies the group to the hits of the search like the other groups, so the result matches the count
+     * of the category facet. Unlike the hard category filter, it does not limit the search itself.
+     *
+     * @param array $categoryIds
+     * @return self
+     * @phpstan-param array<mixed> $categoryIds
+     */
+    public function withCategories(array $categoryIds): self
+    {
+        return $this->withGroup(FacetAggregationBuilder::GROUP_CATEGORY, $this->toCategoryIds($categoryIds));
+    }
+
+    /**
+     * Adds categories to the hard category filter, which limits the search itself (e.g. on a category page)
      *
      * @param array $categoryIds
      * @return self
@@ -91,12 +106,9 @@ class SearchFilters
     public function withCategoryIds(array $categoryIds): self
     {
         $copy = clone $this;
-        foreach ($categoryIds as $categoryId) {
-            if (is_scalar($categoryId) && (int)$categoryId > 0) {
-                $copy->categoryIds[] = (string)(int)$categoryId;
-            }
-        }
-        $copy->categoryIds = array_values(array_unique($copy->categoryIds));
+        $copy->categoryIds = array_values(array_unique(
+            array_merge($copy->categoryIds, $this->toCategoryIds($categoryIds))
+        ));
 
         return $copy;
     }
@@ -240,5 +252,24 @@ class SearchFilters
             'facets' => $this->facets,
             'priceRanges' => $this->priceRanges,
         ];
+    }
+
+    /**
+     * Valid category ids (integers > 0) as strings
+     *
+     * @param array $categoryIds
+     * @return list<string>
+     * @phpstan-param array<mixed> $categoryIds
+     */
+    private function toCategoryIds(array $categoryIds): array
+    {
+        $ids = [];
+        foreach ($categoryIds as $categoryId) {
+            if (is_scalar($categoryId) && (int)$categoryId > 0) {
+                $ids[] = (string)(int)$categoryId;
+            }
+        }
+
+        return array_values(array_unique($ids));
     }
 }

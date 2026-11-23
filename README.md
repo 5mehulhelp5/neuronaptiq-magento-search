@@ -252,8 +252,8 @@ ElasticSuite is handled by `NeuronaptiQ_SearchElasticsuite` (multiselect, price 
 
 **Setup for integrators:**
 
-1. **Search service:** filters, facets, price ranges and exclusive price maximum (`params.filters`, `categoryIds`,
-   `price.maxExclusive`, `facets`, `priceRanges`; response `facets` with `ranges`). The products must be synced
+1. **Search service:** filters, facets, price ranges and exclusive price maximum (`params.filters` incl. the group
+   `category`, `price.maxExclusive`, `facets`, `priceRanges`; response `facets` with `ranges`). The products must be synced
    with their attributes: the filter groups of the API are the **attribute codes**, the values the **option ids**
    of Magento, the categories with their ids (the Magento product feed of NeuronaptiQ does this).
 2. **Variant mode of the integration: "Best variant"** (one variant per product). The counts are then per
@@ -270,14 +270,15 @@ ElasticSuite is handled by `NeuronaptiQ_SearchElasticsuite` (multiselect, price 
    customer group and catalog rule prices are not considered, for guests and the default customer group both
    match.
 6. **Checking:** with debug logging enabled (see *Logging*) every search request in the log shows the selection
-   (`params.filters`, `price`, `categoryIds`) and the response the facets.
+   (`params.filters`, `price`) and the response the facets.
 
 **How it works:**
 
 - **Selection:** `Model/Search/CriteriaFilterReader` reads the filters of the layered navigation from the search
-  criteria and sends them to the API (`params.filters`, `categoryIds`, `price`):
+  criteria and sends them to the API (`params.filters`, `price`):
   - attributes: group = attribute code, values = option ids (OR within an attribute, AND between attributes)
-  - category: the hard category filter (`categoryIds`), the context of the search
+  - category: group `category`, values = category ids; applied to the hits of the search like the attributes,
+    so the number of products after the click matches the count of the category facet
   - price: `price.from`/`price.to` in the base currency; the end of a range is sent as exclusive maximum
     (`maxExclusive`, Magento's `to − 0.001` is reverted), a single price (from = to) as inclusive maximum
   - `search_term`, `visibility` and `category_ids_to_aggregate` (limits OpenSearch's category aggregation, no
