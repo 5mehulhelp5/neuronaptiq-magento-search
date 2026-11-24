@@ -6,6 +6,7 @@ namespace NeuronaptiQ\Search\Plugin;
 use Magento\Search\Model\Autocomplete\ItemInterface;
 use Magento\Search\Model\AutocompleteInterface;
 use NeuronaptiQ\Search\Model\Autocomplete\ItemConverter;
+use NeuronaptiQ\Search\Model\Autocomplete\SuggestState;
 use NeuronaptiQ\Search\Model\AutocompleteService;
 use NeuronaptiQ\Search\Model\Config;
 use NeuronaptiQ\Search\Model\PageCacheGuard;
@@ -16,7 +17,8 @@ use Psr\Log\LoggerInterface;
  *
  * Typed suggestions of other data providers (e.g. categories and terms of Smile ElasticSuite) are kept, except
  * for the types delivered by NeuronaptiQ: products always, categories if NeuronaptiQ returns category suggestions.
- * Magento's default search term suggestions have no type and are not kept.
+ * Magento's default search term suggestions have no type and are not kept. The replaced types are published in
+ * SuggestState while the data providers run, so integrations can skip creating suggestions that are dropped anyway.
  *
  * On API errors and empty results the Magento suggestions are returned unchanged and the response is kept out of
  * the full page cache.
@@ -44,21 +46,29 @@ class AutocompletePlugin
     private PageCacheGuard $pageCacheGuard;
 
     /**
+     * @var SuggestState
+     */
+    private SuggestState $suggestState;
+
+    /**
      * @param Config $config
      * @param AutocompleteService $autocompleteService
      * @param LoggerInterface $logger
      * @param PageCacheGuard $pageCacheGuard
+     * @param SuggestState $suggestState
      */
     public function __construct(
         Config $config,
         AutocompleteService $autocompleteService,
         LoggerInterface $logger,
-        PageCacheGuard $pageCacheGuard
+        PageCacheGuard $pageCacheGuard,
+        SuggestState $suggestState
     ) {
         $this->config = $config;
         $this->autocompleteService = $autocompleteService;
         $this->logger = $logger;
         $this->pageCacheGuard = $pageCacheGuard;
+        $this->suggestState = $suggestState;
     }
 
     /**
@@ -91,8 +101,17 @@ class AutocompletePlugin
             return $this->fallback($proceed);
         }
 
-        // Own suggestions first (products, categories), followed by the other typed suggestions
-        return array_merge($ownItems, $this->getAdditionalItems($proceed(), $this->getTypes($ownItems)));
+        // Own suggestions first (products, categories), followed by the other typed suggestions; integrations skip
+        // the suggestions of the own types while the data providers run
+        $ownTypes = $this->getTypes($ownItems);
+        $this->suggestState->setReplacedTypes($ownTypes);
+        try {
+            $items = $proceed();
+        } finally {
+            $this->suggestState->setReplacedTypes([]);
+        }
+
+        return array_merge($ownItems, $this->getAdditionalItems($items, $ownTypes));
     }
 
     /**

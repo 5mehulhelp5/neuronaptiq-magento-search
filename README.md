@@ -122,7 +122,10 @@ flowchart TD
 ```
 
 - `Plugin/AutocompletePlugin` (around `Magento\Search\Model\AutocompleteInterface::getItems`) replaces the
-  suggestions of `search/ajax/suggest` with the result of `POST …/suggest`.
+  suggestions of `search/ajax/suggest` with the result of `POST …/suggest`. While the data providers run, the
+  replaced types (products, categories if the API returns categories) are available in
+  `Model/Autocomplete/SuggestState`, so integrations can skip building suggestions that are dropped anyway
+  (`NeuronaptiQ_SearchElasticsuite` does this for the ElasticSuite products and categories).
 - `Model/AutocompleteService` queries the API, `Model/ProductLoader` loads the hits from the database
   (enabled products only, in API score order), `Model/Autocomplete/ItemConverter` builds the autocomplete
   items.
